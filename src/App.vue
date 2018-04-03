@@ -5,6 +5,10 @@
       router-link(to="/cities", class="nav-link") Miasta
     li.nav-item
       router-link(to="/regions", class="nav-link") Województwa
+    li.nav-item
+      router-link(to="/cities-regions", class="nav-link") Miasta w województwach
+    li.nav-item
+      router-link(to="/writing", class="nav-link") Napisanie
   router-view
 </template>
 
@@ -36,5 +40,42 @@ export default {
 
 h1, h2 {
   font-weight: normal;
+}
+
+.regions-quiz {
+    width: 500px;
+    margin: 0 auto;
+
+    #map {
+        width: 500px;
+        height: 500px;
+        margin-bottom: 20px;
+    }
+
+    .error {
+        height: 60px;
+    }
+
+    .quiz-block {
+        .description {
+            .city {
+                font-size: 120%;
+                color: navy;
+                margin-left: 10px;
+            }
+        }
+
+        .answer{
+            margin-bottom: 10px;
+        }
+    }
+
+    .finish-block {
+        margin: 10px 0;
+
+        .total {
+            color: navy;
+        }
+    }
 }
 </style>

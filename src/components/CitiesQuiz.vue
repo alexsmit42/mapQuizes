@@ -6,13 +6,13 @@
     button(v-if="!currentQuestion", type="button", class="btn btn-success", @click="nextQuestion") Rozruch!
     .quiz-block(v-if="currentQuestion")
         h4 Miasta:&nbsp;
-            strong {{ currentQuestion }} / {{ cities.length }}
+            strong {{ currentQuestion }} / {{ questions.length }}
         .description Zaznacz na mapie miasto
-            span.city {{ cities[currentQuestion - 1].city }}
+            span.city {{ questions[currentQuestion - 1].title }}
         template(v-if="distantion")    
             .answer Popełniłeś błąd na&nbsp;
                 strong {{ distantion }} km
-            button(v-if="currentQuestion !== cities.length", type="button", class="btn btn-primary", @click="nextQuestion") Następne miasto
+            button(v-if="currentQuestion !== questions.length", type="button", class="btn btn-primary", @click="nextQuestion") Następne miasto
             button(v-else, type="button", class="btn btn-primary", @click="nextQuestion") Zakończyć
     h5.finish-block(v-if="isFinish") Twój wynik&nbsp;
         span.total {{ total }}&nbsp;
@@ -25,6 +25,8 @@
 import QuizInfo from './partial/QuizInfo.vue'
 import ErrorMsg from './partial/ErrorMsg.vue'
 
+import QuizMixin from './mixins/QuizMixin'
+
 export default {
     data() {
         return {
@@ -34,32 +36,28 @@ export default {
             },
             map: {},
             center: {lat: 51.9714, lng: 19.1824},
-            markers: [],
             rightMarker: {},
             zoom: 6,
-            cities: [
-                {city: "Warsaw", lat: 52.2296756, lng: 21.012228700000037},
-                {city: "Gdańsk", lat: 54.35202520000001, lng: 18.64663840000003},
-                {city: "Wroclaw", lat: 51.1078852, lng: 17.03853760000004},
-                {city: "Kraków", lat: 50.06465009999999, lng: 19.94497990000002},
-                {city: "Poznań", lat: 52.406374, lng: 16.925168100000064},
-                {city: "Toruń", lat: 53.0137902, lng: 18.59844369999996},
-                {city: "Lublin", lat: 51.2464536, lng: 22.568446300000005},
-                {city: "Szczecin", lat: 53.4285438, lng: 14.552811600000041},
-                {city: "Bydgoszcz", lat: 53.12348040000001, lng: 18.008437800000024},
-                {city: "Łódź", lat: 51.7592485, lng: 19.45598330000007},
-                {city: "Katowice", lat: 50.26489189999999, lng: 19.02378150000004}
+            questions: [
+                {title: "Warsaw", answer: {lat: 52.2296756, lng: 21.012228700000037}},
+                {title: "Gdańsk", answer: {lat: 54.35202520000001, lng: 18.64663840000003}},
+                {title: "Wroclaw", answer: {lat: 51.1078852, lng: 17.03853760000004}},
+                {title: "Kraków", answer: {lat: 50.06465009999999, lng: 19.94497990000002}},
+                {title: "Poznań", answer: {lat: 52.406374, lng: 16.925168100000064}},
+                {title: "Toruń", answer: {lat: 53.0137902, lng: 18.59844369999996}},
+                {title: "Lublin", answer: {lat: 51.2464536, lng: 22.568446300000005}},
+                {title: "Szczecin", answer: {lat: 53.4285438, lng: 14.552811600000041}},
+                {title: "Bydgoszcz", answer: {lat: 53.12348040000001, lng: 18.008437800000024}},
+                {title: "Łódź", answer: {lat: 51.7592485, lng: 19.45598330000007}},
+                {title: "Katowice", answer: {lat: 50.26489189999999, lng: 19.02378150000004}}
             ],
-            currentQuestion: 0,
-            total: 0,
-            errorMessage: '',
-            distantion: 0,
-            isFinish: false
+            distantion: 0
         }
     },
     components: {
         QuizInfo, ErrorMsg
     },
+    mixins: [QuizMixin],
     mounted() {
         this.initMap()
     },
@@ -117,47 +115,43 @@ export default {
         addMarker(position) {
             this.errorMessage = '';
 
-            if (this.markers.length === 0 && this.currentQuestion > 0) {
+            if (!this.answer && this.currentQuestion > 0) {
                 let marker = new google.maps.Marker({
                     map: this.map,
                     position
                 });
-                this.markers.push(marker)
+                this.answer = marker;
 
-                let city = this.cities[this.currentQuestion - 1]
+                let question = this.questions[this.currentQuestion - 1]
                 this.rightMarker = new google.maps.Marker({
                     map: this.map,
                     position: {
-                        lat: city.lat,
-                        lng: city.lng
+                        lat: question.answer.lat,
+                        lng: question.answer.lng
                     },
-                    label: city.city.substring(0,1)
+                    label: question.title.substring(0,1)
                 });
 
                 this.showAnswer()
             } else {
-                if (this.markers.length > 0) {
-                    this.errorMessage = 'Już wykonałeś ruch!';
-                } else {
-                    this.errorMessage = 'Rozpocznij grę!';
-                }
+                this.errorStep()
             }
         },
         showAnswer() {
-            let marker = this.markers[0]
-            let city = this.cities[this.currentQuestion - 1]
-            this.distantion = this.getDistantion(marker.position.lat(), marker.position.lng(), city.lat, city.lng)
+            let marker = this.answer
+            let question = this.questions[this.currentQuestion - 1]
+            this.distantion = this.getDistantion(marker.position.lat(), marker.position.lng(), question.answer.lat, question.answer.lng)
             this.total += this.distantion
         },
         getPositions() {
             let geocoder = new google.maps.Geocoder();
 
-            this.cities.map(city => {
+            this.questions.map(question => {
                 setTimeout(() => {
-                    geocoder.geocode( { 'address': city}, (results, status) => {
+                    geocoder.geocode( { 'address': question.title}, (results, status) => {
                         if (status == 'OK') {
                             this.positions.push({
-                                city: city,
+                                city: question.title,
                                 lat: results[0].geometry.location.lat(),
                                 lng: results[0].geometry.location.lng()
                             });
@@ -167,34 +161,10 @@ export default {
                 1000
             )})
         },
-        nextQuestion() {
-            if (this.currentQuestion === this.cities.length) {
-                this.currentQuestion = 0;
-                this.isFinish = true;
-                return;
-            }
-
-            if (this.currentQuestion === 0) {
-                this.total = 0;
-                this.isFinish = false;
-            }
-
-            this.errorMessage = '';
+        clear() {
             this.distantion = 0;
-            this.isFinish = false;
-
-            if (this.currentQuestion > 0 && this.markers.length === 0) {
-                this.errorMessage = 'Zaznacz miasto na mapie!'
-                return
-            }
-
-            if (this.markers.length) {
-                this.markers[0].setMap(null);
-                this.rightMarker.setMap(null);
-            }
-            this.markers = [];
-
-            this.currentQuestion++;
+            this.answer.setMap(null);
+            this.rightMarker.setMap(null);
         },
         getDistantion(lat1, lon1, lat2, lon2) {
             function deg2rad(deg) {

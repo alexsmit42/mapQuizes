@@ -7,16 +7,16 @@
     .quiz-block(v-if="currentQuestion")
         h4 Województw:&nbsp;
             strong {{ currentQuestion }} / {{ questions.length }}
-        .description Zaznacz na mapie województo
+        .description Zaznacz na mapie miasto
             span.city {{ questions[currentQuestion - 1].title }}
         template(v-if="answer")    
-            button(v-if="currentQuestion !== questions.length", type="button", class="btn btn-primary", @click="nextQuestion") Następne województo
+            button(v-if="currentQuestion !== questions.length", type="button", class="btn btn-primary", @click="nextQuestion") Następne miasto
             button(v-else, type="button", class="btn btn-primary", @click="nextQuestion") Zakończyć
     h5.finish-block(v-if="isFinish") Twój wynik&nbsp;
-        span.total {{ total }}&nbsp;
+        span.total {{ total }}&nbsp;  
 </template>
 
-<script>    
+<script>
 
 import QuizInfo from './partial/QuizInfo.vue'
 import ErrorMsg from './partial/ErrorMsg.vue'
@@ -27,27 +27,29 @@ export default {
     data() {
         return {
             info: {
-                title: 'Gra geograficzna o województwach',
-                description: 'Witaj, podróżniku! Teraz dowiemy się, jak dobrze znasz położenie województw w Polsce...'
+                title: 'Gra geograficzna o miastach i województwach',
+                description: 'Witaj, podróżniku! Teraz dowiemy się, jak dobrze znasz położenie miast w województwach...'
             },
             map: {},
             questions: [
-                {answer: 'PL-WP', title: "Wielkopolskie"},
-                {answer: 'PL-KP', title: "Kujawsko-Pomorskie"},
-                {answer: 'PL-MA', title: "Małopolskie"},
-                {answer: 'PL-LD', title: "Łódzkie"},
-                {answer: 'PL-DS', title: "Dolnośląskie"},
-                {answer: 'PL-LU', title: "Lubelskie"},
-                {answer: 'PL-LB', title: "Lubuskie"},
-                {answer: 'PL-MZ', title: "Mazowieckie"},
-                {answer: 'PL-OP', title: "Opolskie"},
-                {answer: 'PL-PD', title: "Podlaskie"},
-                {answer: 'PL-PM', title: "Pomorskie"},
-                {answer: 'PL-SL', title: "Śląskie"},
-                {answer: 'PL-PK', title: "Podkarpackie"},
-                {answer: 'PL-SK', title: "Świętokrzyskie"},
-                {answer: 'PL-WN', title: "Warmińsko-mazurskie"},
-                {answer: 'PL-ZP', title: "Zachodniopomorskie"}
+                {answer: 'PL-WP', title: "Poznań"},
+                {answer: 'PL-KP', title: "Bydgoszcz"},
+                {answer: 'PL-KP', title: "Toruń"},
+                {answer: 'PL-MA', title: "Kraków"},
+                {answer: 'PL-LD', title: "Łódz"},
+                {answer: 'PL-DS', title: "Wrocław"},
+                {answer: 'PL-LB', title: "Gorzów Wielkopolski"},
+                {answer: 'PL-LB', title: "Zielona Góra"},
+                {answer: 'PL-LU', title: "Lublin"},
+                {answer: 'PL-MZ', title: "Warszawa"},
+                {answer: 'PL-OP', title: "Opole"},
+                {answer: 'PL-PD', title: "Białystok"},
+                {answer: 'PL-PM', title: "Gdańsk"},
+                {answer: 'PL-SL', title: "Katowice"},
+                {answer: 'PL-PK', title: "Rzeszów"},
+                {answer: 'PL-SK', title: "Kielce"},
+                {answer: 'PL-WN', title: "Olsztyn"},
+                {answer: 'PL-ZP', title: "Szczecin"}
             ],
         }
     },
@@ -109,41 +111,7 @@ export default {
 </script>
 
 <style lang="scss">
-.regions-quiz {
-    width: 500px;
-    margin: 0 auto;
 
-    #map {
-        width: 500px;
-        height: 500px;
-        margin-bottom: 20px;
-    }
-
-    .error {
-        height: 60px;
-    }
-
-    .quiz-block {
-        .description {
-            .city {
-                font-size: 120%;
-                color: navy;
-                margin-left: 10px;
-            }
-        }
-
-        .answer{
-            margin-bottom: 10px;
-        }
-    }
-
-    .finish-block {
-        margin: 10px 0;
-
-        .total {
-            color: navy;
-        }
-    }
-}
 </style>
+
 

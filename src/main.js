@@ -11,6 +11,8 @@ import App from './App.vue'
 
 import CitiesQuiz from './components/CitiesQuiz.vue'
 import RegionsQuiz from './components/RegionsQuiz.vue'
+import CitiesInRegions from './components/CitiesInRegions.vue'
+import WritingQuiz from './components/WritingQuiz.vue'
 
 const routes = [
   {
@@ -21,6 +23,12 @@ const routes = [
   },
   {
     path: '/regions', component: RegionsQuiz, name: 'regions'
+  },
+  {
+    path: '/cities-regions', component: CitiesInRegions, name: 'cities-regions'
+  },
+  {
+    path: '/writing', component: WritingQuiz, name: 'pisownia'
   },
 ]
 
